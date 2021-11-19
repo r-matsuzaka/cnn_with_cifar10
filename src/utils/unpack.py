@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
+import os
 
 home_path = Path(__file__).parents[2]
 data_path = home_path / "cifar-10-batches-py/data_batch_1"
@@ -12,8 +13,20 @@ img_size = 1024
 train_size = 8000
 
 
+def create_dir() -> None:
+    """
+    create direcotry for train and test
+    """
+
+    os.makedirs(train_data_path, exist_ok=True)
+    os.makedirs(test_data_path, exist_ok=True)
+
+
+
 def create_rgb_array(rgb_lst: list) -> np.ndarray:
     """
+    Create numpy array of rgb value
+
     Args:
         rgb_lst (list): list of rgb value
 
@@ -25,6 +38,8 @@ def create_rgb_array(rgb_lst: list) -> np.ndarray:
 
     """
 
+    create_dir()
+    
     r_lst = rgb_lst[:img_size]
     r_arr = np.array(r_lst)
     r_arr = r_arr.reshape([32, 32])
