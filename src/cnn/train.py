@@ -173,7 +173,7 @@ def training(model):
         train_images,
         train_labels_onehot,
         batch_size=128,
-        epochs=2,
+        epochs=200,
         validation_split=0.1,
         verbose=1,
     )
