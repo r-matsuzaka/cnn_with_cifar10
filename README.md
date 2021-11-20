@@ -18,6 +18,11 @@ make lint
 `python unpack.py`
 で訓練データとテストデータに分割して展開
 
+
+## モデルの学習とテストデータでの精度確認
+`python train.py`
+
+
 ## Qiita
 [GCP Machine Learning Engineer 知識チェック 100本ノック　問題編 Part1](https://qiita.com/qwerty1234/items/cef146bd0545425ea1e3)
 []()
