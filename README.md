@@ -19,12 +19,12 @@ make lint
 `tar -zxvf cifar-10-python.tar.gz`
 で解凍
 
-`python unpack.py`
+`python src/utils/unpack.py`
 で訓練データとテストデータをそれぞれ、data以下に保存する。
 
 
 ## モデルの学習とテストデータでの精度確認
-`python train.py`
+`python src/cnn/train.py`
 
 
 ## 学習結果
