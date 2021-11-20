@@ -6,12 +6,13 @@ import numpy as np
 from PIL import Image
 
 home_path = Path(__file__).parents[2]
-source_path = home_path / "cifar-10-batches-py/data_batch_1"
+train_source_path = home_path / "cifar-10-batches-py/data_batch_"
+test_source_path = home_path / "cifar-10-batches-py/test_batch"
+
 data_path = home_path / "data"
 train_data_path = home_path / "data/train"
 test_data_path = home_path / "data/test"
 img_size = 1024
-train_size = 8000
 
 
 def create_dir() -> None:
@@ -61,26 +62,46 @@ def create_rgb_array(rgb_lst: list) -> np.ndarray:
 train_label_path = data_path / "train_label.txt"
 test_label_path = data_path / "test_label.txt"
 
-with open(source_path, "rb") as fd, open(train_label_path, mode="w") as ftr, open(
-    test_label_path, mode="w"
-) as fte:
-    dict = pickle.load(fd, encoding="bytes")
 
-    rgb_lst = dict[b"data"]
-    label_lst = dict[b"labels"]
+def image_save(source_path: str, mode: str, batch_id: int = 0) -> None:
+    """
+    Load images and save labels
 
-    for i in range(train_size):
-        rgb_arr = create_rgb_array(rgb_lst[i])
-        pil_image_color = Image.fromarray(rgb_arr)
+    Args:
+        source_path (str): path to cifar10 data
+        mode (str): train or test
+        batch_id (int): batch id
 
-        pil_image_color.save(train_data_path / f"train_{i}.png")
-        ftr.write(f"{label_lst[i]}")
+    """
+    save_data_path = data_path / f"{mode}"
 
-    j = 0
-    for i in range(train_size, 10000):
-        rgb_arr = create_rgb_array(rgb_lst[i])
-        pil_image_color = Image.fromarray(rgb_arr)
+    label_path = data_path / f"{mode}_label.txt"
 
-        pil_image_color.save(test_data_path / f"test_{j}.png")
-        fte.write(f"{label_lst[i]}")
-        j += 1
+    # one batch size
+    num_images = 10000
+    if mode == "train":
+        source_path = source_path + str(batch_id + 1)
+
+    # Set initial no
+    image_id = batch_id * num_images
+
+    with open(source_path, "rb") as fd, open(label_path, mode="a") as fl:
+        dict = pickle.load(fd, encoding="bytes")
+
+        rgb_lst = dict[b"data"]
+        label_lst = dict[b"labels"]
+
+        for i in range(num_images):
+            rgb_arr = create_rgb_array(rgb_lst[i])
+            pil_image_color = Image.fromarray(rgb_arr)
+
+            pil_image_color.save(save_data_path / f"{mode}_{image_id}.png")
+            fl.write(f"{label_lst[i]}")
+            image_id += 1
+
+
+image_save(str(test_source_path), mode="test")
+
+n_batch = 5
+for i in range(1, n_batch, 1):
+    image_save(str(train_source_path), mode="train", batch_id=i)
