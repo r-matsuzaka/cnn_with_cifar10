@@ -169,11 +169,16 @@ def training(model):
 
     print("Training model...")
 
-    fit = model.fit(train_images, train_labels_onehot, batch_size=128, epochs=2)
-
-    test_loss, test_acc = model.evaluate(
-        test_images, test_labels_onehot, verbose=1, validation_split=0.1
+    fit = model.fit(
+        train_images,
+        train_labels_onehot,
+        batch_size=128,
+        epochs=2,
+        validation_split=0.1,
+        verbose=1,
     )
+
+    test_loss, test_acc = model.evaluate(test_images, test_labels_onehot)
 
     return test_acc, fit
 
