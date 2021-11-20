@@ -12,6 +12,7 @@ import sys
 
 sys.path.append("/home/ryo/cnn_with_cifar10/src/utils")
 
+import helpers
 import visualize
 
 home_path = Path(__file__).parents[2]
@@ -36,6 +37,7 @@ def yes_no_input():
             return False
 
 
+@helpers.timer
 def load_image(num_image: int, image_paths: list) -> np.ndarray:
     """
     load image
@@ -64,6 +66,7 @@ def load_image(num_image: int, image_paths: list) -> np.ndarray:
     return images
 
 
+@helpers.timer
 def load_label(label_path: str) -> np.ndarray:
     """
     load label
@@ -87,31 +90,13 @@ def load_label(label_path: str) -> np.ndarray:
     return labels_arr
 
 
-if yes_no_input():
-    print(
-        "OK. The training cnn with cifiar10 dataset for classification is started with CPU."
-    )
+@helpers.timer
+def LeNet(models):
+    """ "
+    Lenet architecture
 
-    print("Loading paths...")
-
-    train_file_paths = glob.glob(str(train_data_path / "*"))
-    test_file_paths = glob.glob(str(test_data_path / "*"))
-
-    train_images = load_image(train_size, train_file_paths)
-    test_images = load_image(test_size, test_file_paths)
-
-    train_labels = load_label(str(train_label_path))
-    test_labels = load_label(str(test_label_path))
-
-    train_labels_onehot = to_categorical(train_labels, 10)
-    test_labels_onehot = to_categorical(test_labels, 10)
-
-    # ピクセルの値を 0~1 の間に正規化
-    print("Normalization...")
-    train_images, test_images = train_images / 255.0, test_images / 255.0
+    """
     num_classes = 10
-
-    # LeNet
     print("For cnn architecture LeNet is used.")
     model = models.Sequential()
     model.add(
@@ -137,14 +122,78 @@ if yes_no_input():
         optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]
     )
 
+    return model
+
+
+@helpers.timer
+def load_data():
+    """ "
+    Load data
+    """
+
+    print("Loading paths...")
+
+    train_file_paths = glob.glob(str(train_data_path / "*"))
+    test_file_paths = glob.glob(str(test_data_path / "*"))
+
+    print("Train image size:")
+    train_images = load_image(train_size, train_file_paths)
+    print("Test image size:")
+    test_images = load_image(test_size, test_file_paths)
+
+    train_labels = load_label(str(train_label_path))
+    test_labels = load_label(str(test_label_path))
+
+    train_labels_onehot = to_categorical(train_labels, 10)
+    test_labels_onehot = to_categorical(test_labels, 10)
+
+    return train_images, test_images, train_labels_onehot, test_labels_onehot
+
+
+@helpers.timer
+def normalization(train_images, test_images):
+    """
+    Noarmalization
+    """
+    print("Normalization...")
+    train_images, test_images = train_images / 255.0, test_images / 255.0
+
+    return train_images, test_images
+
+
+@helpers.timer
+def training(model):
+    """
+    Training
+    """
     print("Training model...")
 
     fit = model.fit(train_images, train_labels_onehot, epochs=200)
 
     test_loss, test_acc = model.evaluate(test_images, test_labels_onehot, verbose=2)
 
-    print("Visualization...")
+    return test_acc, fit
 
+
+if yes_no_input():
+
+    print(
+        "OK. The training cnn with cifiar10 dataset for classification is started with CPU."
+    )
+
+    # データのロード
+    train_images, test_images, train_labels_onehot, test_labels_onehot = load_data()
+
+    # ピクセルの値を 0~1 の間に正規化
+    train_images, test_images = normalization(train_images, test_images)
+
+    # LeNet
+    model = LeNet(models)
+
+    # Training
+    test_acc, fit = training(model)
+
+    print("Visualization...")
     visualize(fit)
 
     print(test_acc)

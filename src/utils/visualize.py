@@ -1,9 +1,17 @@
+import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 
 home_path = Path(__file__).parents[2]
 result_path = home_path / "results"
+
+
+def create_dir() -> None:
+    """
+    create direcotry for results
+    """
+    os.makedirs(result_path, exist_ok=True)
 
 
 def plot_history_loss(fit, ax):
@@ -27,6 +35,7 @@ def plot_history_acc(fit, ax):
 
 
 def save_fig(fit):
+    create_dir()
     fig, axs = plt.subplots(ncols=2, figsize=(10, 4))
 
     axL = axs[0]
