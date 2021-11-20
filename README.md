@@ -28,7 +28,7 @@ make lint
 
 
 ## 学習結果
-![学習結果](.github/loss_gragh.ong)
+![学習結果](.github/loss_gragh.png)
 
 
 
