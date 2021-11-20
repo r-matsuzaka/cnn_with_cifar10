@@ -34,15 +34,15 @@ def plot_history_acc(fit, ax):
     ax.legend(loc="upper right")
 
 
-def save_fig(fit):
+def save_fig(history):
     create_dir()
     fig, axs = plt.subplots(ncols=2, figsize=(10, 4))
 
     axL = axs[0]
     axR = axs[1]
 
-    plot_history_loss(fit, axL)
-    plot_history_acc(fit, axR)
+    plot_history_loss(history, axL)
+    plot_history_acc(history, axR)
     fig.savefig(result_path / "loss_gragh.png")
 
     plt.close()

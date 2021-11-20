@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 import numpy as np
+from natsort import natsorted
 from PIL import Image
 from tensorflow.keras import layers, models
 from tensorflow.keras.utils import to_categorical
@@ -11,6 +12,7 @@ print(os.path.basename(__file__))
 import sys
 
 sys.path.append("/home/ryo/cnn_with_cifar10/src/utils")
+
 
 import helpers
 import visualize
@@ -49,8 +51,8 @@ def load_image(num_image: int, image_paths: list) -> np.ndarray:
 
     Returns:
         images  (np.ndarray): numpy array of rgb value.
-        shape for train is (8000,32,32).
-        shape for test is (2000,32,32).
+        shape for train is (50000,32,32).
+        shape for test is (10000,32,32).
     """
 
     images = np.zeros((num_image, 32, 32, 3), "uint8")
@@ -135,8 +137,8 @@ def load_data():
 
     print("Loading paths...")
 
-    train_file_paths = glob.glob(str(train_data_path / "*"))
-    test_file_paths = glob.glob(str(test_data_path / "*"))
+    train_file_paths = natsorted(glob.glob(str(train_data_path / "*")))
+    test_file_paths = natsorted(glob.glob(str(test_data_path / "*")))
 
     print("Train image size:")
     train_images = load_image(train_size, train_file_paths)
@@ -160,6 +162,9 @@ def normalization(train_images, test_images):
     Noarmalization
     """
     print("Normalization...")
+    train_images = train_images.astype("float32")
+    test_images = test_images.astype("float32")
+
     train_images, test_images = train_images / 255.0, test_images / 255.0
 
     return train_images, test_images
@@ -173,18 +178,18 @@ def training(model):
 
     print("Training model...")
 
-    fit = model.fit(
+    history = model.fit(
         train_images,
         train_labels_onehot,
-        batch_size=128,
-        epochs=200,
+        batch_size=32,
+        epochs=10,
         validation_split=0.1,
         verbose=1,
     )
 
     test_loss, test_acc = model.evaluate(test_images, test_labels_onehot)
 
-    return test_acc, fit
+    return test_acc, history
 
 
 if yes_no_input():
@@ -203,9 +208,9 @@ if yes_no_input():
     model = LeNet(models)
 
     # Training
-    test_acc, fit = training(model)
+    test_acc, history = training(model)
 
     print("Visualization...")
-    visualize.save_fig(fit)
+    visualize.save_fig(history)
 
     print(test_acc)
