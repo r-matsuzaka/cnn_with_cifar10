@@ -14,13 +14,11 @@ from tensorflow.keras.utils import to_categorical
 print(os.path.basename(__file__))
 import sys
 
-sys.path.append("/home/ryo/cnn_with_cifar10/src/utils")
-
-
+home_path = Path(__file__).parents[2]
+sys.path.append(str(home_path) + "/src/utils")
 import helpers
 import visualize
 
-home_path = Path(__file__).parents[2]
 train_data_path = home_path / "data/train"
 test_data_path = home_path / "data/test"
 data_path = home_path / "data"
