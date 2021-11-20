@@ -27,6 +27,11 @@ make lint
 `python train.py`
 
 
+## 学習結果
+![学習結果](.github/loss_gragh.ong)
+
+
+
 ## Qiita
 - [GCP Machine Learning Engineer 知識チェック 100本ノック　問題編 Part1](https://qiita.com/qwerty1234/items/cef146bd0545425ea1e3)
 - [cifar10データセットでcnnを使ってクラス分類してみた](https://qiita.com/qwerty1234/items/e74cf8b94271cf8b29be)
