@@ -26,8 +26,8 @@ def plot_history_loss(fit, ax):
 
 def plot_history_acc(fit, ax):
     # Plot the loss in the history
-    ax.plot(fit.history["accuracy"], label="loss for training")
-    ax.plot(fit.history["val_accuracy"], label="loss for validation")
+    ax.plot(fit.history["accuracy"], label="accuracy for training")
+    ax.plot(fit.history["val_accuracy"], label="accuracy for validation")
     ax.set_title("model accuracy")
     ax.set_xlabel("epoch")
     ax.set_ylabel("accuracy")
