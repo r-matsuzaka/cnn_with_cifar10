@@ -29,7 +29,7 @@ test_size = 10000
 def yes_no_input():
     while True:
         choice = input(
-            "This calculation take much time. If you want to continue calculation respond with 'yes', otherwise'no' [y/N]: "
+            "This calculation takes much time. If you want to continue calculation respond with 'yes', otherwise'no' [y/N]: "
         ).lower()
         if choice in ["y", "ye", "yes"]:
             return True
