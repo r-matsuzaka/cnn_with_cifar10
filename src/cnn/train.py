@@ -83,8 +83,8 @@ def load_label(label_path: str) -> np.ndarray:
 
     Returns:
         labels_arr  (np.ndarray): numpy array of labels.
-        shape for train is (8000,).
-        shape for test is (2000,).
+        shape for train is (50000,).
+        shape for test is (10000,).
     """
 
     with open(label_path) as f:
