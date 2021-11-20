@@ -166,11 +166,14 @@ def training(model):
     """
     Training
     """
+
     print("Training model...")
 
-    fit = model.fit(train_images, train_labels_onehot, epochs=200)
+    fit = model.fit(train_images, train_labels_onehot, batch_size=128, epochs=2)
 
-    test_loss, test_acc = model.evaluate(test_images, test_labels_onehot, verbose=2)
+    test_loss, test_acc = model.evaluate(
+        test_images, test_labels_onehot, verbose=1, validation_split=0.1
+    )
 
     return test_acc, fit
 
@@ -194,6 +197,6 @@ if yes_no_input():
     test_acc, fit = training(model)
 
     print("Visualization...")
-    visualize(fit)
+    visualize.save_fig(fit)
 
     print(test_acc)
