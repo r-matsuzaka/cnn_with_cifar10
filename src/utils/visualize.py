@@ -1,0 +1,39 @@
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+
+home_path = Path(__file__).parents[2]
+result_path = home_path / "results"
+
+
+def plot_history_loss(fit, ax):
+    # Plot the loss in the history
+    ax.plot(fit.history["loss"], label="loss for training")
+    ax.plot(fit.history["val_loss"], label="loss for validation")
+    ax.set_title("model loss")
+    ax.set_xlabel("epoch")
+    ax.set_ylabel("loss")
+    ax.legend(loc="upper right")
+
+
+def plot_history_acc(fit, ax):
+    # Plot the loss in the history
+    ax.plot(fit.history["acc"], label="loss for training")
+    ax.plot(fit.history["val_acc"], label="loss for validation")
+    ax.set_title("model accuracy")
+    ax.set_xlabel("epoch")
+    ax.set_ylabel("accuracy")
+    ax.legend(loc="upper right")
+
+
+def save_fig(fit):
+    fig, axs = plt.subplots(ncols=2, figsize=(10, 4))
+
+    axL = axs[0]
+    axR = axs[1]
+
+    plot_history_loss(fit, axL)
+    plot_history_acc(fit, axR)
+    fig.savefig(result_path / "loss_gragh.png")
+
+    plt.close()

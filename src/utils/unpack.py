@@ -73,6 +73,7 @@ def image_save(source_path: str, mode: str, batch_id: int = 0) -> None:
         batch_id (int): batch id
 
     """
+    print(f"mode:{mode}")
     save_data_path = data_path / f"{mode}"
 
     label_path = data_path / f"{mode}_label.txt"
@@ -84,6 +85,9 @@ def image_save(source_path: str, mode: str, batch_id: int = 0) -> None:
 
     # Set initial no
     image_id = batch_id * num_images
+    print(f"batch_id:{batch_id}")
+    print(f"initial id:{image_id}")
+    print("*******************")
 
     with open(source_path, "rb") as fd, open(label_path, mode="a") as fl:
         dict = pickle.load(fd, encoding="bytes")
@@ -96,6 +100,7 @@ def image_save(source_path: str, mode: str, batch_id: int = 0) -> None:
             pil_image_color = Image.fromarray(rgb_arr)
 
             pil_image_color.save(save_data_path / f"{mode}_{image_id}.png")
+            print(f"{mode}_{image_id}.png")
             fl.write(f"{label_lst[i]}")
             image_id += 1
 
@@ -103,5 +108,5 @@ def image_save(source_path: str, mode: str, batch_id: int = 0) -> None:
 image_save(str(test_source_path), mode="test")
 
 n_batch = 5
-for i in range(1, n_batch, 1):
+for i in range(n_batch):
     image_save(str(train_source_path), mode="train", batch_id=i)
