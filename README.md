@@ -28,9 +28,12 @@ make lint
 
 
 ## 学習結果
-![学習結果](.github/loss_gragh.png)
 
+### LeNet
+![学習結果](.github/loss_gragh_lenet.png)
 
+### ResNet
+![学習結果](.github/loss_gragh_resnet.png)
 
 ## Qiita
 - [GCP Machine Learning Engineer 知識チェック 100本ノック　問題編 Part1](https://qiita.com/qwerty1234/items/cef146bd0545425ea1e3)

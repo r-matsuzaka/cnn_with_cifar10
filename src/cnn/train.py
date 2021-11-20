@@ -3,9 +3,12 @@ import os
 from pathlib import Path
 
 import numpy as np
+import tensorflow as tf
 from natsort import natsorted
 from PIL import Image
+from tensorflow.keras import backend as K
 from tensorflow.keras import layers, models
+from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.utils import to_categorical
 
 print(os.path.basename(__file__))
@@ -26,6 +29,7 @@ test_label_path = data_path / "test_label.txt"
 
 train_size = 50000
 test_size = 10000
+input_shape = (32, 32, 3)
 
 
 def yes_no_input():
@@ -110,7 +114,7 @@ def LeNet(models):
             strides=(1, 1),
             padding="same",
             activation="tanh",
-            input_shape=(32, 32, 3),
+            input_shape=input_shape,
         )
     )
     model.add(layers.MaxPooling2D((2, 2)))
@@ -127,6 +131,81 @@ def LeNet(models):
     )
 
     return model
+
+
+# モデルの生成
+@helpers.timer
+def generate_model(
+    input_shape,
+    block_f,
+    blocks,
+    block_sets,
+    block_layers=2,
+    first_filters=32,
+    kernel_size=(3, 3),
+):
+    """
+    Ref:https://ohke.hateblo.jp/entry/2019/06/22/090000
+    """
+    inputs = layers.Input(shape=input_shape)
+
+    # 入力層
+    x = layers.Conv2D(filters=first_filters, kernel_size=kernel_size, padding="same")(
+        inputs
+    )
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+    x = layers.MaxPool2D((2, 2))(x)
+    x = layers.Dropout(0.2)(x)
+
+    # 畳み込み層
+    for s in range(block_sets):
+        filters = first_filters * (2 ** s)
+
+        for b in range(blocks):
+            x = block_f(x, kernel_size, filters, block_layers)
+
+        x = layers.MaxPool2D((2, 2))(x)
+        x = layers.Dropout(0.2)(x)
+
+    # 出力層
+    x = layers.Flatten()(x)
+    x = layers.Dropout(0.4)(x)
+    x = layers.Dense(100)(x)
+    x = layers.ReLU()(x)
+    outputs = layers.Dense(10, activation="softmax")(x)
+
+    model = tf.keras.Model(inputs=inputs, outputs=outputs)
+    model.summary()
+    model.compile(
+        loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"]
+    )
+
+    return model
+
+
+# shortcut path有りのブロック (residual block)
+def residual_block(x, kernel_size, filters, n_layers=2):
+    """
+    Ref:https://ohke.hateblo.jp/entry/2019/06/22/090000
+    """
+    shortcut_x = x
+
+    for l in range(n_layers):
+        x = layers.Conv2D(filters, kernel_size, padding="same")(x)
+        x = layers.BatchNormalization()(x)
+
+        if l == n_layers - 1:
+            if K.int_shape(x) != K.int_shape(shortcut_x):
+                shortcut_x = layers.Conv2D(filters, (1, 1), padding="same")(
+                    shortcut_x
+                )  # 1x1フィルタ
+
+            x = layers.Add()([x, shortcut_x])
+
+        x = layers.ReLU()(x)
+
+    return x
 
 
 @helpers.timer
@@ -205,7 +284,10 @@ if yes_no_input():
     train_images, test_images = normalization(train_images, test_images)
 
     # LeNet
-    model = LeNet(models)
+    # model = LeNet(models)
+
+    # ResNet
+    model = generate_model(input_shape, residual_block, blocks=3, block_sets=2)
 
     # Training
     test_acc, history = training(model)
