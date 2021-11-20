@@ -87,6 +87,8 @@ def load_label(label_path: str) -> np.ndarray:
         label_lst = [int(i) for i in label_lst]
         labels_arr = np.array(label_lst)
 
+    print(labels_arr.shape)
+
     return labels_arr
 
 
@@ -141,7 +143,9 @@ def load_data():
     print("Test image size:")
     test_images = load_image(test_size, test_file_paths)
 
+    print("Train label size:")
     train_labels = load_label(str(train_label_path))
+    print("Test label size:")
     test_labels = load_label(str(test_label_path))
 
     train_labels_onehot = to_categorical(train_labels, 10)

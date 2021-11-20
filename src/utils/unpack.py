@@ -100,7 +100,7 @@ def image_save(source_path: str, mode: str, batch_id: int = 0) -> None:
             pil_image_color = Image.fromarray(rgb_arr)
 
             pil_image_color.save(save_data_path / f"{mode}_{image_id}.png")
-            print(f"{mode}_{image_id}.png")
+            # print(f"{mode}_{image_id}.png")
             fl.write(f"{label_lst[i]}")
             image_id += 1
 
